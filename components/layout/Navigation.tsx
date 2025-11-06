@@ -9,12 +9,13 @@ import { useAuth } from '@/hooks/useAuth';
  *
  * - 画面下部に固定表示
  * - モバイルのみ表示（< md ブレークポイント）
- * - 4つの主要リンク: ホーム、レシピ検索、お気に入り、アカウント
+ * - 3つの主要リンク: ホーム、レシピ検索、お気に入り
  * - 現在のページをハイライト表示
+ * - ログイン/ログアウトはヘッダーのハンバーガーメニューで操作可能
  */
 export function Navigation() {
   const pathname = usePathname();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const navItems = [
     {
@@ -35,12 +36,6 @@ export function Navigation() {
       icon: '❤️',
       active: pathname === '/favorites',
       requireAuth: true,
-    },
-    {
-      href: isAuthenticated ? '/account' : '/auth',
-      label: isAuthenticated ? 'アカウント' : 'ログイン',
-      icon: isAuthenticated ? '👤' : '🔐',
-      active: pathname === '/account' || pathname === '/auth',
     },
   ];
 
