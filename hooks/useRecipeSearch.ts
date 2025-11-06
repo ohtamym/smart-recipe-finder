@@ -127,18 +127,46 @@ export function useRecipeSearch(
     try {
       console.log('🔍 レシピ検索中...', ingredients);
 
-      const response = await fetch('/api/recipes/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ingredients }),
-      });
+      // タイムアウト付きfetch（30秒）
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const data = (await response.json()) as ApiResponse<{
-        recipes: Recipe[];
-        total: number;
-      }>;
+      let response;
+      try {
+        response = await fetch('/api/recipes/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ingredients }),
+          signal: controller.signal,
+        });
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        // ネットワークエラーまたはタイムアウト
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          setError('リクエストがタイムアウトしました。もう一度お試しください。');
+        } else {
+          setError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
+        }
+        setRecipes([]);
+        console.error('❌ ネットワークエラー:', fetchError);
+        return;
+      }
+      clearTimeout(timeoutId);
+
+      let data;
+      try {
+        data = (await response.json()) as ApiResponse<{
+          recipes: Recipe[];
+          total: number;
+        }>;
+      } catch (parseError) {
+        setError('サーバーからの応答が正しくありません。もう一度お試しください。');
+        setRecipes([]);
+        console.error('❌ JSON解析エラー:', parseError);
+        return;
+      }
 
       // エラーレスポンスの処理
       if (!response.ok || !data.success) {

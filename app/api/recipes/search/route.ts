@@ -97,7 +97,21 @@ function validateRequest(body: any): {
 export async function POST(request: NextRequest) {
   try {
     // リクエストボディを取得
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (error) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_JSON',
+            message: 'リクエストボディが正しいJSON形式ではありません',
+          },
+        },
+        { status: 400 }
+      );
+    }
 
     // バリデーション
     const validation = validateRequest(body);
