@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** ボタンのバリアント */
@@ -20,7 +20,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
  * <Button variant="outline" isLoading>送信中...</Button>
  * ```
  */
-export function Button({
+export const Button = memo(function Button({
   variant = 'solid',
   size = 'md',
   isLoading = false,
@@ -83,4 +83,4 @@ export function Button({
       )}
     </button>
   );
-}
+});

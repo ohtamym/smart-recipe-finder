@@ -918,21 +918,31 @@
 
 ### RECIPE-025: パフォーマンス最適化
 
-**ステータス**: TODO
+**ステータス**: DONE ✅
 **優先度**: 中
 **見積もり**: 4時間
+**完了日**: 2025年11月6日
 
 **タスク**:
-- [ ] `React.memo` の適用
-- [ ] `useMemo` / `useCallback` の適用
-- [ ] 画像の最適化（Next.js Image）
-- [ ] 遅延読み込みの実装
-- [ ] バンドルサイズの確認
-- [ ] Lighthouseスコアの確認
+- [x] `React.memo` の適用
+- [x] `useMemo` / `useCallback` の適用
+- [x] 画像の最適化（Next.js Image）
+- [x] 遅延読み込みの実装
+- [x] バンドルサイズの確認
+- [x] Lighthouseスコアの確認
 
 **完了条件**:
-- ページ読み込み速度が改善されること
-- Lighthouseスコアが良好であること
+- ✅ ページ読み込み速度が改善されること
+- ✅ Lighthouseスコアが良好であること
+
+**実装詳細**:
+- RecipeCard: React.memo適用、Next.js Image使用（fill, sizes最適化）
+- IngredientTag: React.memo + useCallback適用
+- Button: React.memo適用
+- FavoritesList: Next.js Image使用（fill, sizes最適化）
+- RecipeDetail: Next.js Image使用（priority属性）
+- バンドルサイズ確認: npm run build実行、正常にビルド完了
+- TypeScript型チェック: エラーなし
 
 ---
 

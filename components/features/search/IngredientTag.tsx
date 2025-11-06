@@ -1,5 +1,7 @@
 'use client';
 
+import { memo, useCallback } from 'react';
+
 /**
  * 材料タグコンポーネント
  *
@@ -13,18 +15,24 @@ export interface IngredientTagProps {
   onRemove: (ingredient: string) => void;
 }
 
-export function IngredientTag({ ingredient, onRemove }: IngredientTagProps) {
-  const handleRemove = () => {
+export const IngredientTag = memo(function IngredientTag({
+  ingredient,
+  onRemove,
+}: IngredientTagProps) {
+  const handleRemove = useCallback(() => {
     onRemove(ingredient);
-  };
+  }, [ingredient, onRemove]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Enter または Space で削除
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleRemove();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      // Enter または Space で削除
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleRemove();
+      }
+    },
+    [handleRemove]
+  );
 
   return (
     <div
@@ -54,4 +62,4 @@ export function IngredientTag({ ingredient, onRemove }: IngredientTagProps) {
       </button>
     </div>
   );
-}
+});

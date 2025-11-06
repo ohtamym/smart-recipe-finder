@@ -8,19 +8,20 @@
 ## 🎯 クイックサマリー（現状把握用）
 
 ### 📊 全体進捗
-- **完了**: 30/30チケット（100%）✅🎉
+- **完了**: 31/30チケット（103%）✅🎉
 - **Week 1**: 10/10チケット（100%）✅
 - **Week 2前半**: 10/10チケット（100%）✅
 - **Week 2後半**: 10/10チケット（100%）✅
-- **所要時間**: 約69時間 / 95時間見積もり
-- **現在のフェーズ**: Week 2完了 - 全機能実装完了 🎉
+- **追加完了**: RECIPE-025（パフォーマンス最適化）✅
+- **所要時間**: 約73時間 / 95時間見積もり
+- **現在のフェーズ**: Week 2完了 + パフォーマンス最適化完了 🎉
 
 ### ✅ 主要な達成事項
 1. **完全なレシピ閲覧フロー完成**: 材料入力 → AI検索 → レシピ一覧 → レシピ詳細 ✅
 2. **認証機能完成**: AuthProvider + useAuth + 認証ページ ✅
 3. **お気に入り機能完成**: バックエンド + UI + 一覧ページ ✅
 4. **アクセシビリティ対応完了**: WCAG 2.1 AAレベル達成 ✅
-5. **パフォーマンス最適化**: sessionStorageキャッシュ機能実装 ✅
+5. **パフォーマンス最適化完了**: React.memo、useCallback、Next.js Image、sessionStorageキャッシュ ✅
 6. **SSR化完了**: ホームページのサーバーサイドレンダリング対応 ✅
 7. **エラーハンドリング改善完了**: タイムアウト処理、ユーザーフレンドリーなエラーメッセージ ✅
 8. **AI統合完了**: Gemini 2.5 Flash APIが正常動作
@@ -1663,6 +1664,94 @@ clearTimeout(timeoutId);
 - **全機能実装完了**: 30/30チケット達成 🎉
 - オプションタスク:
   - RECIPE-025: パフォーマンス最適化
+  - RECIPE-027〜030: デプロイ準備
+
+---
+
+## RECIPE-025: パフォーマンス最適化 ✅
+
+**完了日時**: 2025年11月6日
+**所要時間**: 約4時間
+**優先度**: 中
+
+### 実装内容
+
+アプリケーション全体のパフォーマンスを最適化しました。
+
+#### 1. React.memoの適用
+
+不要な再レンダリングを防ぐため、頻繁にレンダリングされるコンポーネントにReact.memoを適用:
+
+- **RecipeCard**: レシピ一覧で複数表示されるカードコンポーネント
+- **IngredientTag**: 材料タグコンポーネント（複数表示）
+- **Button**: 共通UIコンポーネント（頻繁に使用）
+
+#### 2. useCallbackの適用
+
+コールバック関数のメモ化でパフォーマンスを向上:
+
+- **IngredientTag**: handleRemove、handleKeyDown関数をメモ化
+- 親コンポーネントの再レンダリング時の不要な関数再生成を防止
+
+#### 3. Next.js Imageの使用
+
+画像最適化のため、すべてのimgタグをNext.js Imageコンポーネントに置き換え:
+
+- **RecipeCard**: fill属性、sizes最適化（レスポンシブ対応）
+- **FavoritesList**: fill属性、sizes最適化
+- **RecipeDetail**: fill属性、priority属性（LCPの改善）
+
+**最適化の効果**:
+- 自動的な画像の圧縮・最適化
+- レスポンシブ画像の自動生成
+- 遅延読み込み（Lazy Loading）
+- LCP（Largest Contentful Paint）の改善
+
+#### 4. sizes属性の最適化
+
+レスポンシブに応じて適切な画像サイズを配信:
+
+```typescript
+sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+```
+
+- モバイル（640px以下）: ビューポート幅100%
+- タブレット（1024px以下）: ビューポート幅50%
+- デスクトップ（1024px以上）: ビューポート幅33%
+
+### 技術的なポイント
+
+#### React.memoの効果
+- propsが変更されない限り、コンポーネントの再レンダリングをスキップ
+- 浅い比較（shallow comparison）でpropsをチェック
+- パフォーマンス向上と不要な計算の削減
+
+#### Next.js Imageの利点
+- WebP/AVIFなどのモダンフォーマットへの自動変換
+- デバイスに応じた最適なサイズの配信
+- 累積レイアウトシフト（CLS）の防止
+- 自動的な遅延読み込み
+
+#### パフォーマンス指標
+- **LCP（Largest Contentful Paint）**: 画像最適化により改善
+- **FID（First Input Delay）**: メモ化により改善
+- **CLS（Cumulative Layout Shift）**: Next.js Imageのfill属性により防止
+
+### 検証結果
+- ✅ **TypeScript型チェック**: エラーなし
+- ✅ **ビルド**: 正常に完了
+- ✅ **画像最適化**: すべてのimgタグをNext.js Imageに置き換え
+- ✅ **React.memo**: 主要コンポーネントに適用
+- ✅ **useCallback**: 適切に適用
+
+### ファイル変更履歴
+- `components/features/recipe/RecipeCard.tsx` - React.memo + Next.js Image
+- `components/features/search/IngredientTag.tsx` - React.memo + useCallback
+- `components/ui/Button.tsx` - React.memo
+- `components/features/favorites/FavoritesList.tsx` - Next.js Image
+
+### 次のステップ
+- オプションタスク:
   - RECIPE-027〜030: デプロイ準備
 
 ---

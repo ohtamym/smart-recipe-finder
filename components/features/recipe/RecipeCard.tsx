@@ -1,6 +1,8 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Clock, Users, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { FavoriteButton } from '@/components/features/favorites';
@@ -51,7 +53,7 @@ const SOURCE_COLOR: Record<Recipe['source'], string> = {
   api: 'text-blue-600 bg-blue-50',
 };
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
+export const RecipeCard = memo(function RecipeCard({ recipe }: RecipeCardProps) {
   const {
     id,
     title,
@@ -68,14 +70,16 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       <Card className="h-full transition-all duration-200 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
         {/* レシピ画像 */}
         {imageUrl && (
-          <div className="relative w-full h-40 sm:h-48 overflow-hidden rounded-t-lg">
-            <img
+          <div className="relative w-full h-40 sm:h-48 overflow-hidden rounded-t-lg bg-gray-100">
+            <Image
               src={imageUrl}
               alt={title}
-              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-200 group-hover:scale-105"
             />
             {/* ソースバッジ */}
-            <div className="absolute top-2 right-2">
+            <div className="absolute top-2 right-2 z-10">
               <span
                 className={`${SOURCE_COLOR[source]} px-2 py-1 rounded-full text-xs font-medium shadow-sm`}
               >
@@ -135,4 +139,4 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       </Card>
     </Link>
   );
-}
+});

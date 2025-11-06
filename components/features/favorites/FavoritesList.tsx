@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Trash2, Clock, Users, TrendingUp } from 'lucide-react';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import type { Favorite } from '@/types/recipe';
@@ -140,14 +141,16 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
 
               {/* レシピ画像 */}
               {recipe.imageUrl && (
-                <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
-                  <img
+                <div className="relative w-full h-48 overflow-hidden rounded-t-lg bg-gray-100">
+                  <Image
                     src={recipe.imageUrl}
                     alt={recipe.title}
-                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-200 group-hover:scale-105"
                   />
                   {/* ソースバッジ */}
-                  <div className="absolute top-2 left-2">
+                  <div className="absolute top-2 left-2 z-10">
                     <span
                       className={`${
                         SOURCE_COLOR[recipe.source]
