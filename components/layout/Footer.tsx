@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * フッターコンポーネント
@@ -8,9 +9,11 @@ import Link from 'next/link';
  * - コピーライト情報
  * - ナビゲーションリンク
  * - レスポンシブ対応（モバイル/デスクトップ）
+ * - 認証状態に応じたリンク表示
  */
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const { isAuthenticated } = useAuth();
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
@@ -66,15 +69,15 @@ export function Footer() {
 
             <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-3">
-                アカウント
+                {isAuthenticated ? 'マイページ' : 'アカウント'}
               </h3>
               <ul className="flex flex-col gap-2">
                 <li>
                   <Link
-                    href="/auth"
+                    href={isAuthenticated ? '/favorites' : '/auth'}
                     className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
                   >
-                    ログイン / 新規登録
+                    {isAuthenticated ? 'お気に入り' : 'ログイン / 新規登録'}
                   </Link>
                 </li>
               </ul>
@@ -118,13 +121,17 @@ export function Footer() {
             >
               お気に入り
             </Link>
-            <span className="text-gray-300">|</span>
-            <Link
-              href="/auth"
-              className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              ログイン
-            </Link>
+            {!isAuthenticated && (
+              <>
+                <span className="text-gray-300">|</span>
+                <Link
+                  href="/auth"
+                  className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  ログイン
+                </Link>
+              </>
+            )}
           </nav>
         </div>
 
