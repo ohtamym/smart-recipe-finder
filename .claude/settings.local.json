@@ -17,7 +17,15 @@
       "Bash(npx tsc:*)",
       "Bash(tree:*)",
       "Bash(timeout 10 npx tsc:*)",
-      "Bash(timeout 30 npx tsc:*)"
+      "Bash(timeout 30 npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(timeout 10 npm run dev:*)",
+      "Bash(cat:*)",
+      "Bash(npm run build)",
+      "Bash(npm test:*)",
+      "Bash(npm run test:coverage:*)"
     ],
     "deny": [],
     "ask": []

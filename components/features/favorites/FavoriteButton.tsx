@@ -118,13 +118,15 @@ export function FavoriteButton({
       aria-label={buttonText}
       aria-pressed={favorited}
     >
-      <Heart
-        className={`w-5 h-5 mr-2 ${
-          favorited ? 'fill-current text-red-500' : ''
-        }`}
-        aria-hidden="true"
-      />
-      {loading ? '処理中...' : buttonText}
+      <span className="flex items-center justify-center whitespace-nowrap">
+        <Heart
+          className={`w-5 h-5 mr-2 ${
+            favorited ? 'fill-current text-red-500' : ''
+          }`}
+          aria-hidden="true"
+        />
+        {loading ? '処理中...' : buttonText}
+      </span>
     </Button>
   );
 }

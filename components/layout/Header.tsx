@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { Heart, LogOut, User as UserIcon, Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui';
-import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { Heart, LogOut, User as UserIcon, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * ヘッダーコンポーネント
@@ -26,7 +26,7 @@ export function Header() {
    */
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isMobileMenuOpen) {
+      if (event.key === "Escape" && isMobileMenuOpen) {
         closeMobileMenu();
         // フォーカスをメニューボタンに戻す
         menuButtonRef.current?.focus();
@@ -34,11 +34,11 @@ export function Header() {
     };
 
     if (isMobileMenuOpen) {
-      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener("keydown", handleEscapeKey);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [isMobileMenuOpen]);
 
@@ -59,11 +59,11 @@ export function Header() {
     };
 
     if (isMobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isMobileMenuOpen]);
 
@@ -73,7 +73,7 @@ export function Header() {
   const handleSignOut = async () => {
     if (isLoggingOut) return;
 
-    const confirmed = window.confirm('ログアウトしますか？');
+    const confirmed = window.confirm("ログアウトしますか？");
     if (!confirmed) return;
 
     setIsLoggingOut(true);
@@ -81,10 +81,10 @@ export function Header() {
       await signOut();
       setIsMobileMenuOpen(false);
       // ログアウト成功後はホームページにリダイレクト
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (error) {
-      console.error('ログアウトエラー:', error);
-      alert('ログアウトに失敗しました。もう一度お試しください。');
+      console.error("ログアウトエラー:", error);
+      alert("ログアウトに失敗しました。もう一度お試しください。");
     } finally {
       setIsLoggingOut(false);
     }
@@ -124,7 +124,10 @@ export function Header() {
           </Link>
 
           {/* デスクトップナビゲーション */}
-          <nav className="hidden md:flex items-center gap-6" aria-label="メインナビゲーション">
+          <nav
+            className="hidden md:flex items-center gap-6"
+            aria-label="メインナビゲーション"
+          >
             <Link
               href="/"
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
@@ -159,12 +162,12 @@ export function Header() {
                   disabled={isLoggingOut}
                 >
                   {isLoggingOut ? (
-                    '処理中...'
+                    "処理中..."
                   ) : (
-                    <>
+                    <span className="flex items-center whitespace-nowrap">
                       <LogOut className="w-4 h-4 mr-1" />
                       ログアウト
-                    </>
+                    </span>
                   )}
                 </Button>
               </>
@@ -180,7 +183,9 @@ export function Header() {
             ref={menuButtonRef}
             onClick={toggleMobileMenu}
             className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
-            aria-label={isMobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
+            aria-label={
+              isMobileMenuOpen ? "メニューを閉じる" : "メニューを開く"
+            }
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
           >
@@ -200,7 +205,10 @@ export function Header() {
             className="md:hidden border-t border-gray-200 py-4 space-y-4"
           >
             {/* ナビゲーションリンク */}
-            <nav className="flex flex-col space-y-2" aria-label="モバイルナビゲーション">
+            <nav
+              className="flex flex-col space-y-2"
+              aria-label="モバイルナビゲーション"
+            >
               <Link
                 href="/"
                 onClick={closeMobileMenu}
@@ -238,18 +246,20 @@ export function Header() {
                     fullWidth
                   >
                     {isLoggingOut ? (
-                      '処理中...'
+                      "処理中..."
                     ) : (
-                      <>
+                      <span className="flex items-center justify-center whitespace-nowrap">
                         <LogOut className="w-4 h-4 mr-2" />
                         ログアウト
-                      </>
+                      </span>
                     )}
                   </Button>
                 </div>
               ) : (
                 <Link href="/auth" onClick={closeMobileMenu}>
-                  <Button size="md" fullWidth>ログイン</Button>
+                  <Button size="md" fullWidth>
+                    ログイン
+                  </Button>
                 </Link>
               )}
             </div>
