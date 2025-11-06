@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * モバイル用ボトムナビゲーション
@@ -13,10 +14,7 @@ import { usePathname } from 'next/navigation';
  */
 export function Navigation() {
   const pathname = usePathname();
-
-  // TODO: 認証機能実装後にuseAuthフックを使用
-  // const { user } = useAuth();
-  const user = null; // 仮の状態
+  const { user, isAuthenticated } = useAuth();
 
   const navItems = [
     {
@@ -39,9 +37,9 @@ export function Navigation() {
       requireAuth: true,
     },
     {
-      href: user ? '/account' : '/auth',
-      label: user ? 'アカウント' : 'ログイン',
-      icon: user ? '👤' : '🔐',
+      href: isAuthenticated ? '/account' : '/auth',
+      label: isAuthenticated ? 'アカウント' : 'ログイン',
+      icon: isAuthenticated ? '👤' : '🔐',
       active: pathname === '/account' || pathname === '/auth',
     },
   ];
@@ -55,7 +53,7 @@ export function Navigation() {
       <div className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           // お気に入りは認証必須
-          if (item.requireAuth && !user) {
+          if (item.requireAuth && !isAuthenticated) {
             return (
               <Link
                 key={item.href}

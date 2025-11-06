@@ -616,49 +616,63 @@
 
 ### RECIPE-015: 認証機能の実装
 
-**ステータス**: TODO
+**ステータス**: DONE ✅
 **優先度**: 高
 **見積もり**: 5時間
+**完了日**: 2025年11月6日
 
 **タスク**:
-- [ ] `lib/supabase/auth.ts` の実装（認証ヘルパー関数）
-- [ ] `hooks/useAuth.ts` の実装
+- [x] `lib/supabase/auth.ts` の実装（認証ヘルパー関数）
+- [x] `hooks/useAuth.ts` の実装
   - セッション管理
   - ログイン/ログアウト/サインアップ
   - `onAuthStateChange` リスナー
-- [ ] `components/providers/AuthProvider.tsx` の実装
-- [ ] `app/layout.tsx` にAuthProviderを統合
+- [x] `components/providers/AuthProvider.tsx` の実装
+- [x] `app/layout.tsx` にAuthProviderを統合
 
 **参照**: `docs/component-design.md`, `docs/api-design.md`
 
 **完了条件**:
-- 認証状態が管理されること
-- ログイン/ログアウトが機能すること
+- ✅ 認証状態が管理されること
+- ✅ ログイン/ログアウトが機能すること
+
+**実装詳細**:
+- AuthProvider: React Contextを使用した認証状態管理
+- useAuthフック: AuthProviderから認証状態を取得
+- Header.tsx: 認証状態に応じたUI切り替え（ログイン/ログアウトボタン）
+- Navigation.tsx: 認証状態に応じたナビゲーション表示
+- エラーメッセージの日本語化対応
 
 ---
 
 ### RECIPE-016: 認証ページの実装
 
-**ステータス**: TODO
+**ステータス**: DONE ✅
 **優先度**: 高
 **見積もり**: 4時間
+**完了日**: 2025年11月6日
 
 **依存**: RECIPE-015
 
 **タスク**:
-- [ ] `app/auth/page.tsx` の実装（CSR）
-- [ ] `components/features/auth/LoginForm.tsx` の実装
-- [ ] `components/features/auth/SignupForm.tsx` の実装
-- [ ] フォームバリデーション
-- [ ] エラーメッセージ表示
-- [ ] ログイン成功時のリダイレクト
+- [x] `app/auth/page.tsx` の実装（CSR）
+- [x] `components/features/auth/AuthForm.tsx` の実装（LoginとSignupを統合）
+- [x] フォームバリデーション
+- [x] エラーメッセージ表示
+- [x] ログイン成功時のリダイレクト
 
 **参照**: `docs/component-design.md`
 
 **完了条件**:
-- ログインフォームが動作すること
-- サインアップフォームが動作すること
-- エラーが適切に表示されること
+- ✅ ログインフォームが動作すること
+- ✅ サインアップフォームが動作すること
+- ✅ エラーが適切に表示されること
+
+**実装詳細**:
+- AuthForm: ログインとサインアップを統合した認証フォーム
+- フォームバリデーション: メールアドレス形式、パスワード長、パスワード確認
+- エラーメッセージ: 日本語でユーザーフレンドリーな表示
+- リダイレクト: 認証成功後にホームページまたは指定URLへ遷移
 
 ---
 
