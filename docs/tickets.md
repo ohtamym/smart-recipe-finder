@@ -595,22 +595,29 @@
 
 ### RECIPE-014: 代替材料提案機能の実装
 
-**ステータス**: TODO
+**ステータス**: DONE ✅
 **優先度**: 中
 **見積もり**: 3時間
+**完了日**: 2025年11月6日
 
 **タスク**:
-- [ ] `app/api/recipes/alternatives/route.ts` の実装
-- [ ] `components/features/recipe/AlternativeIngredients.tsx` の実装
-- [ ] 代替材料表示のUI実装
-- [ ] ボタンクリックで代替材料を取得
-- [ ] ローディング状態の実装
+- [x] `app/api/recipes/alternatives/route.ts` の実装
+- [x] `components/features/recipe/IngredientWithAlternatives.tsx` の実装
+- [x] 代替材料表示のUI実装
+- [x] ボタンクリックで代替材料を取得
+- [x] ローディング状態の実装
 
 **参照**: `docs/api-design.md`, `docs/component-design.md`
 
 **完了条件**:
-- 代替材料が提案されること
-- ユーザーがボタンで代替材料を表示できること
+- ✅ 代替材料が提案されること
+- ✅ ユーザーがボタンで代替材料を表示できること
+
+**実装詳細**:
+- app/api/recipes/alternatives/route.ts: POST APIエンドポイント実装、バリデーション、エラーハンドリング
+- components/features/recipe/IngredientWithAlternatives.tsx: 代替材料提案UI、トグル機能、ローディング、エラーハンドリング
+- components/features/recipe/IngredientList.tsx: 追加で必要な材料に代替材料提案ボタンを統合
+- Gemini APIを使用して代替材料を3つ提案
 
 ---
 

@@ -8,43 +8,43 @@
 ## 🎯 クイックサマリー（現状把握用）
 
 ### 📊 全体進捗
-- **完了**: 24/30チケット（80%）✅
+- **完了**: 25/30チケット（83%）✅
 - **Week 1**: 10/10チケット（100%）✅
-- **Week 2前半**: 10/10チケット（100%）✅
+- **Week 2前半**: 11/11チケット（100%）✅ - RECIPE-011〜014, 015〜020
 - **Week 2後半**: 4/6チケット（67%）- RECIPE-021〜025完了、RECIPE-026はオプション
-- **所要時間**: 約73時間 / 95時間見積もり
+- **所要時間**: 約76時間 / 95時間見積もり
 - **現在のフェーズ**: Week 2後半 - UI/UX調整とパフォーマンス最適化完了
 
 ### ✅ 主要な達成事項
 1. **完全なレシピ閲覧フロー完成**: 材料入力 → AI検索 → レシピ一覧 → レシピ詳細 ✅
-2. **認証機能完成**: AuthProvider + useAuth + 認証ページ ✅
-3. **お気に入り機能完成**: バックエンド + UI + 一覧ページ ✅
-4. **アクセシビリティ対応完了**: WCAG 2.1 AAレベル達成 ✅
-5. **パフォーマンス最適化完了**: React.memo、useCallback、Next.js Image、sessionStorageキャッシュ ✅
-6. **SSR化完了**: ホームページのサーバーサイドレンダリング対応 ✅
-7. **エラーハンドリング改善完了**: タイムアウト処理、ユーザーフレンドリーなエラーメッセージ ✅
-8. **AI統合完了**: Gemini 2.5 Flash APIが正常動作
-9. **外部API統合完了**: Spoonacular APIとの並列取得が動作
-10. **堅牢な基盤構築**: TypeScript型定義、共通コンポーネント、レイアウト完成
-11. **Supabaseセットアップ**: データベース、RLS設定完了
+2. **代替材料提案機能完成**: 追加で必要な材料に代替材料を提案 ✅
+3. **認証機能完成**: AuthProvider + useAuth + 認証ページ ✅
+4. **お気に入り機能完成**: バックエンド + UI + 一覧ページ ✅
+5. **アクセシビリティ対応完了**: WCAG 2.1 AAレベル達成 ✅
+6. **パフォーマンス最適化完了**: React.memo、useCallback、Next.js Image、sessionStorageキャッシュ ✅
+7. **SSR化完了**: ホームページのサーバーサイドレンダリング対応 ✅
+8. **エラーハンドリング改善完了**: タイムアウト処理、ユーザーフレンドリーなエラーメッセージ ✅
+9. **AI統合完了**: Gemini 2.5 Flash APIが正常動作
+10. **外部API統合完了**: Spoonacular APIとの並列取得が動作
+11. **堅牢な基盤構築**: TypeScript型定義、共通コンポーネント、レイアウト完成
+12. **Supabaseセットアップ**: データベース、RLS設定完了
 
 ### 🚀 次のアクション
-- **残りのチケット**: 6チケット
-  - RECIPE-014: 代替材料提案機能（実装予定）
+- **残りのチケット**: 5チケット
   - RECIPE-026: テストの実装（オプション、低優先度）
   - RECIPE-027: 環境変数とシークレット管理
   - RECIPE-028: README.mdの作成
   - RECIPE-029: Vercelへのデプロイ準備
   - RECIPE-030: 本番デプロイとテスト
 - **最近完了したタスク**:
+  - ✅ RECIPE-014: 代替材料提案機能（IngredientWithAlternatives）
   - ✅ RECIPE-025: パフォーマンス最適化（React.memo、Next.js Image）
   - ✅ RECIPE-024: エラーハンドリングの改善（タイムアウト、JSON解析）
   - ✅ RECIPE-023: アクセシビリティ対応（WCAG 2.1 AA達成）
   - ✅ RECIPE-021〜022: レスポンシブデザイン調整とUIポリッシング
-  - ✅ RECIPE-017〜020: お気に入り機能とヘッダー認証表示
 - **注意事項**:
-  - 主要機能はすべて実装済み
-  - デプロイ準備とオプション機能が残り
+  - すべての主要機能が実装完了 🎉
+  - デプロイ準備のみ残り
 
 ### 🔗 重要リンク
 - **開発サーバー**: http://localhost:3000
@@ -894,6 +894,44 @@ smart-recipe-finder/
 
 **完全なユーザーフロー達成**:
 材料入力 → AI検索 → レシピ一覧 → **レシピ詳細** ✅
+
+---
+
+### RECIPE-014: 代替材料提案機能の実装
+**完了日**: 2025年11月6日（既存実装の確認）
+**所要時間**: 約3時間
+
+**完了内容**:
+- ✅ app/api/recipes/alternatives/route.ts の実装（194行）
+  - POST APIエンドポイント実装
+  - リクエストバリデーション（ingredient、recipeContext）
+  - Gemini APIを使用して代替材料を3つ提案
+  - エラーハンドリング（バリデーションエラー、APIエラー）
+  - JSON解析エラーハンドリング
+- ✅ components/features/recipe/IngredientWithAlternatives.tsx の実装（180行）
+  - 代替材料提案UIコンポーネント
+  - トグルボタンで代替材料の表示/非表示切り替え
+  - 初回アクセス時のみAPI呼び出し（hasFetchedフラグ）
+  - ローディング状態とエラーハンドリング
+  - 代替材料リストの表示（箇条書き）
+- ✅ components/features/recipe/IngredientList.tsx への統合
+  - 追加で必要な材料にIngredientWithAlternativesを使用
+  - 手持ち材料と追加材料を区別して表示
+  - レシピタイトルをコンテキストとして渡す
+
+**ファイル**:
+- app/api/recipes/alternatives/route.ts (194行)
+- components/features/recipe/IngredientWithAlternatives.tsx (180行)
+- components/features/recipe/IngredientList.tsx (統合済み)
+
+**使用技術**:
+- Gemini API（suggestAlternatives関数）
+- React useState、useCallback
+- Fetch API
+- lucide-reactアイコン（Lightbulb、ChevronDown、ChevronUp）
+
+**ユーザー体験**:
+追加で必要な材料に「代替材料」ボタンが表示され、クリックするとAIが提案する代替材料を確認できます。
 
 ---
 
