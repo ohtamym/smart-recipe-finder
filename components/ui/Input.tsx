@@ -34,6 +34,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = `${inputId}-error`;
+    const helperId = `${inputId}-helper`;
     const hasError = !!error;
 
     const baseStyles = 'px-3 py-2 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 placeholder:text-gray-400';
@@ -41,6 +43,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const errorStyles = 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500 bg-red-50';
     const disabledStyles = 'bg-gray-100 cursor-not-allowed opacity-60';
     const widthStyles = fullWidth ? 'w-full' : '';
+
+    // aria-describedbyを構築
+    const describedBy = [
+      error ? errorId : null,
+      helperText && !error ? helperId : null,
+    ].filter(Boolean).join(' ') || undefined;
 
     return (
       <div className={`${fullWidth ? 'w-full' : ''}`}>
@@ -58,15 +66,17 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className={`${baseStyles} ${hasError ? errorStyles : normalStyles} ${
             props.disabled ? disabledStyles : ''
           } ${widthStyles} text-gray-900 ${className}`}
+          aria-invalid={hasError}
+          aria-describedby={describedBy}
           {...props}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600" role="alert">
+          <p id={errorId} className="mt-1 text-sm text-red-600" role="alert">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+          <p id={helperId} className="mt-1 text-sm text-gray-500">{helperText}</p>
         )}
       </div>
     );
@@ -104,6 +114,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     ref
   ) => {
     const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = `${textareaId}-error`;
+    const helperId = `${textareaId}-helper`;
     const hasError = !!error;
 
     const baseStyles = 'px-3 py-2 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 placeholder:text-gray-400 resize-vertical';
@@ -111,6 +123,12 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const errorStyles = 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500 bg-red-50';
     const disabledStyles = 'bg-gray-100 cursor-not-allowed opacity-60';
     const widthStyles = fullWidth ? 'w-full' : '';
+
+    // aria-describedbyを構築
+    const describedBy = [
+      error ? errorId : null,
+      helperText && !error ? helperId : null,
+    ].filter(Boolean).join(' ') || undefined;
 
     return (
       <div className={`${fullWidth ? 'w-full' : ''}`}>
@@ -128,15 +146,17 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={`${baseStyles} ${hasError ? errorStyles : normalStyles} ${
             props.disabled ? disabledStyles : ''
           } ${widthStyles} text-gray-900 ${className}`}
+          aria-invalid={hasError}
+          aria-describedby={describedBy}
           {...props}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600" role="alert">
+          <p id={errorId} className="mt-1 text-sm text-red-600" role="alert">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+          <p id={helperId} className="mt-1 text-sm text-gray-500">{helperText}</p>
         )}
       </div>
     );

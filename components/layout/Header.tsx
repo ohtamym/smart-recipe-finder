@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Heart, LogOut, User as UserIcon, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui';
@@ -18,6 +18,54 @@ export function Header() {
   const { user, isAuthenticated, signOut } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  /**
+   * Escキーでモバイルメニューを閉じる
+   */
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isMobileMenuOpen) {
+        closeMobileMenu();
+        // フォーカスをメニューボタンに戻す
+        menuButtonRef.current?.focus();
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isMobileMenuOpen]);
+
+  /**
+   * メニュー外クリックで閉じる
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isMobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target as Node)
+      ) {
+        closeMobileMenu();
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   /**
    * ログアウトハンドラー
@@ -76,7 +124,7 @@ export function Header() {
           </Link>
 
           {/* デスクトップナビゲーション */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6" aria-label="メインナビゲーション">
             <Link
               href="/"
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
@@ -129,23 +177,30 @@ export function Header() {
 
           {/* モバイルメニューボタン */}
           <button
+            ref={menuButtonRef}
             onClick={toggleMobileMenu}
             className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
-            aria-label="メニューを開く"
+            aria-label={isMobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             {isMobileMenuOpen ? (
-              <X className="w-6 h-6 text-gray-700" />
+              <X className="w-6 h-6 text-gray-700" aria-hidden="true" />
             ) : (
-              <Menu className="w-6 h-6 text-gray-700" />
+              <Menu className="w-6 h-6 text-gray-700" aria-hidden="true" />
             )}
           </button>
         </div>
 
         {/* モバイルメニュー */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4 space-y-4">
+          <div
+            ref={mobileMenuRef}
+            id="mobile-menu"
+            className="md:hidden border-t border-gray-200 py-4 space-y-4"
+          >
             {/* ナビゲーションリンク */}
-            <nav className="flex flex-col space-y-2">
+            <nav className="flex flex-col space-y-2" aria-label="モバイルナビゲーション">
               <Link
                 href="/"
                 onClick={closeMobileMenu}

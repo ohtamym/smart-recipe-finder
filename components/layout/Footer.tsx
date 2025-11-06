@@ -31,7 +31,7 @@ export function Footer() {
           </div>
 
           {/* 右側: ナビゲーションリンク */}
-          <nav className="flex gap-12">
+          <nav className="flex gap-12" aria-label="フッターナビゲーション">
             <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 ページ
@@ -97,7 +97,7 @@ export function Footer() {
           </div>
 
           {/* モバイルナビゲーション */}
-          <nav className="flex justify-center gap-4 flex-wrap">
+          <nav className="flex justify-center gap-4 flex-wrap" aria-label="フッターナビゲーション">
             <Link
               href="/"
               className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
