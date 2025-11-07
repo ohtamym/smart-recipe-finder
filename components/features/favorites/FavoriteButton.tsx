@@ -112,21 +112,35 @@ export function FavoriteButton({
     <Button
       onClick={handleClick}
       disabled={loading}
+      isLoading={loading}
       variant={buttonVariant}
       size={size}
       className={`${fullWidth ? 'w-full' : ''} ${className}`}
       aria-label={buttonText}
       aria-pressed={favorited}
     >
-      <span className="flex items-center justify-center whitespace-nowrap">
-        <Heart
-          className={`w-5 h-5 mr-2 ${
-            favorited ? 'fill-current text-red-500' : ''
-          }`}
-          aria-hidden="true"
-        />
-        {loading ? '処理中...' : buttonText}
-      </span>
+      {!loading && (
+        <span className="flex items-center justify-center whitespace-nowrap">
+          <Heart
+            className={`w-5 h-5 mr-2 ${
+              favorited ? 'fill-current text-red-500' : ''
+            }`}
+            aria-hidden="true"
+          />
+          {buttonText}
+        </span>
+      )}
+      {loading && (
+        <span className="flex items-center justify-center whitespace-nowrap">
+          <Heart
+            className={`w-5 h-5 mr-2 ${
+              favorited ? 'fill-current text-red-500' : ''
+            }`}
+            aria-hidden="true"
+          />
+          処理中...
+        </span>
+      )}
     </Button>
   );
 }

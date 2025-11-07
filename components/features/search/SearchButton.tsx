@@ -43,10 +43,10 @@ export function SearchButton({
             : `${ingredientsCount}個の材料からレシピを検索`
         }
       >
-        <span className="flex items-center justify-center gap-2">
+        <span className="flex items-center justify-center gap-2 whitespace-nowrap">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-5 w-5 flex-shrink-0"
             viewBox="0 0 20 20"
             fill="currentColor"
           >

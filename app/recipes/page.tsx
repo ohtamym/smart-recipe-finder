@@ -131,9 +131,9 @@ function RecipesPageContent() {
               onClick={handleRefresh}
               variant="outline"
               size="md"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 whitespace-nowrap"
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4 flex-shrink-0" />
               新しいレシピを探す
             </Button>
           )}

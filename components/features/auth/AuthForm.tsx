@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Mail, Lock, User } from 'lucide-react';
-import { Button, Input, ErrorMessage, Loading } from '@/components/ui';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, User } from "lucide-react";
+import { Button, Input, ErrorMessage, Loading } from "@/components/ui";
 
 /**
  * 認証フォームコンポーネント
@@ -13,32 +13,38 @@ import { Button, Input, ErrorMessage, Loading } from '@/components/ui';
 
 export interface AuthFormProps {
   /** 初期モード（'login' または 'signup'） */
-  initialMode?: 'login' | 'signup';
+  initialMode?: "login" | "signup";
   /** 認証成功後のリダイレクト先 */
   redirectTo?: string;
   /** サインアップ関数 */
-  onSignUp: (email: string, password: string) => Promise<{
+  onSignUp: (
+    email: string,
+    password: string
+  ) => Promise<{
     success: boolean;
     error?: string;
   }>;
   /** ログイン関数 */
-  onSignIn: (email: string, password: string) => Promise<{
+  onSignIn: (
+    email: string,
+    password: string
+  ) => Promise<{
     success: boolean;
     error?: string;
   }>;
 }
 
 export function AuthForm({
-  initialMode = 'login',
-  redirectTo = '/',
+  initialMode = "login",
+  redirectTo = "/",
   onSignUp,
   onSignIn,
 }: AuthFormProps) {
   const router = useRouter();
-  const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [mode, setMode] = useState<"login" | "signup">(initialMode);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -48,17 +54,17 @@ export function AuthForm({
     // メールアドレスの検証
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      return '有効なメールアドレスを入力してください。';
+      return "有効なメールアドレスを入力してください。";
     }
 
     // パスワードの検証
     if (!password || password.length < 6) {
-      return 'パスワードは6文字以上である必要があります。';
+      return "パスワードは6文字以上である必要があります。";
     }
 
     // サインアップ時の確認パスワード検証
-    if (mode === 'signup' && password !== confirmPassword) {
-      return 'パスワードが一致しません。';
+    if (mode === "signup" && password !== confirmPassword) {
+      return "パスワードが一致しません。";
     }
 
     return null;
@@ -82,22 +88,22 @@ export function AuthForm({
     try {
       let result;
 
-      if (mode === 'signup') {
+      if (mode === "signup") {
         result = await onSignUp(email, password);
         if (result.success) {
           setSuccessMessage(
-            'アカウントが作成されました。確認メールをご確認ください。'
+            "アカウントが作成されました。確認メールをご確認ください。"
           );
           // 2秒後にログインモードに切り替え
           setTimeout(() => {
-            setMode('login');
+            setMode("login");
             setSuccessMessage(null);
           }, 2000);
         }
       } else {
         result = await onSignIn(email, password);
         if (result.success) {
-          setSuccessMessage('ログインしました。リダイレクト中...');
+          setSuccessMessage("ログインしました。リダイレクト中...");
           // ログイン成功後、指定ページにリダイレクト
           setTimeout(() => {
             router.push(redirectTo);
@@ -109,8 +115,8 @@ export function AuthForm({
         setError(result.error);
       }
     } catch (err) {
-      console.error('認証エラー:', err);
-      setError('予期しないエラーが発生しました。もう一度お試しください。');
+      console.error("認証エラー:", err);
+      setError("予期しないエラーが発生しました。もう一度お試しください。");
     } finally {
       setIsLoading(false);
     }
@@ -118,14 +124,14 @@ export function AuthForm({
 
   // モード切り替えハンドラー
   const toggleMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
+    setMode(mode === "login" ? "signup" : "login");
     setError(null);
     setSuccessMessage(null);
-    setPassword('');
-    setConfirmPassword('');
+    setPassword("");
+    setConfirmPassword("");
   };
 
-  const isSignUpMode = mode === 'signup';
+  const isSignUpMode = mode === "signup";
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -136,12 +142,12 @@ export function AuthForm({
             <User className="w-8 h-8 text-blue-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {isSignUpMode ? 'アカウント作成' : 'ログイン'}
+            {isSignUpMode ? "アカウント作成" : "ログイン"}
           </h1>
           <p className="text-sm text-gray-600">
             {isSignUpMode
-              ? 'お気に入り機能を使うにはアカウントが必要です'
-              : 'アカウントにログインしてください'}
+              ? "お気に入り機能を使うにはアカウントが必要です"
+              : "アカウントにログインしてください"}
           </p>
         </div>
 
@@ -239,17 +245,9 @@ export function AuthForm({
             size="lg"
             className="w-full"
             disabled={isLoading}
+            isLoading={isLoading}
           >
-            {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loading size="sm" />
-                <span>処理中...</span>
-              </div>
-            ) : isSignUpMode ? (
-              'アカウントを作成'
-            ) : (
-              'ログイン'
-            )}
+            {isSignUpMode ? "アカウントを作成" : "ログイン"}
           </Button>
         </form>
 
@@ -258,7 +256,7 @@ export function AuthForm({
           <p className="text-sm text-gray-600">
             {isSignUpMode ? (
               <>
-                すでにアカウントをお持ちですか？{' '}
+                すでにアカウントをお持ちですか？{" "}
                 <button
                   type="button"
                   onClick={toggleMode}
@@ -270,7 +268,7 @@ export function AuthForm({
               </>
             ) : (
               <>
-                アカウントをお持ちでない方は{' '}
+                アカウントをお持ちでない方は{" "}
                 <button
                   type="button"
                   onClick={toggleMode}

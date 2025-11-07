@@ -160,15 +160,12 @@ export function Header() {
                   size="sm"
                   onClick={handleSignOut}
                   disabled={isLoggingOut}
+                  isLoading={isLoggingOut}
                 >
-                  {isLoggingOut ? (
-                    "処理中..."
-                  ) : (
-                    <span className="flex items-center whitespace-nowrap">
-                      <LogOut className="w-4 h-4 mr-1" />
-                      ログアウト
-                    </span>
-                  )}
+                  <span className="flex items-center whitespace-nowrap">
+                    <LogOut className="w-4 h-4 mr-1" />
+                    ログアウト
+                  </span>
                 </Button>
               </>
             ) : (
@@ -243,16 +240,13 @@ export function Header() {
                     size="md"
                     onClick={handleSignOut}
                     disabled={isLoggingOut}
+                    isLoading={isLoggingOut}
                     fullWidth
                   >
-                    {isLoggingOut ? (
-                      "処理中..."
-                    ) : (
-                      <span className="flex items-center justify-center whitespace-nowrap">
-                        <LogOut className="w-4 h-4 mr-2" />
-                        ログアウト
-                      </span>
-                    )}
+                    <span className="flex items-center justify-center whitespace-nowrap">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      ログアウト
+                    </span>
                   </Button>
                 </div>
               ) : (
