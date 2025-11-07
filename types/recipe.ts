@@ -66,8 +66,8 @@ export interface Favorite {
   id: string;
   /** ユーザーID（UUID） */
   user_id: string;
-  /** レシピID */
-  recipe_id: string;
+  /** レシピタイトル */
+  recipe_title: string;
   /** レシピデータ全体（JSONB） */
   recipe_data: Recipe;
   /** レシピのソース */

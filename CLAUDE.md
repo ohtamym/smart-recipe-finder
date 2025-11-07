@@ -130,6 +130,7 @@ hooks/                      # カスタムReactフック
 4. **お気に入り**:
    - 認証済みユーザーがレシピをお気に入り登録可能
    - レシピデータ全体をSupabaseにJSONBとして保存
+   - お気に入りの判定にはレシピタイトルを使用（AI生成IDは重複の可能性があるため）
    - Row Level Security (RLS) により、ユーザーは自分のお気に入りのみアクセス可能
 
 ## データベーススキーマ（Supabase）
@@ -140,17 +141,19 @@ hooks/                      # カスタムReactフック
 CREATE TABLE favorites (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  recipe_id VARCHAR(255) NOT NULL,
+  recipe_title VARCHAR(255) NOT NULL,
   recipe_data JSONB NOT NULL,  -- レシピオブジェクト全体
   source VARCHAR(50) NOT NULL CHECK (source IN ('ai', 'api')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-  CONSTRAINT unique_user_recipe UNIQUE (user_id, recipe_id)
+  CONSTRAINT unique_user_recipe UNIQUE (user_id, recipe_title)
 );
 
 -- インデックス
 CREATE INDEX idx_favorites_user_id ON favorites(user_id);
 CREATE INDEX idx_favorites_created_at ON favorites(created_at DESC);
 ```
+
+**注意**: お気に入りの判定にはレシピタイトルを使用します（v1.1から変更）。理由は、AI生成レシピのIDは任意に付与されるため重複する可能性があるためです。
 
 ### RLSポリシー
 

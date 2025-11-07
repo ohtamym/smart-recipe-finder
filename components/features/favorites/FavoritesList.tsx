@@ -20,7 +20,7 @@ export interface FavoritesListProps {
   /** お気に入りレシピのリスト */
   favorites: Favorite[];
   /** お気に入り削除時のコールバック */
-  onRemove: (recipeId: string) => Promise<boolean>;
+  onRemove: (recipeTitle: string) => Promise<boolean>;
 }
 
 // 難易度の日本語表示
@@ -81,7 +81,6 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
    */
   const handleRemove = async (
     e: React.MouseEvent,
-    recipeId: string,
     recipeTitle: string
   ) => {
     e.preventDefault();
@@ -96,10 +95,10 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
       return;
     }
 
-    setDeletingId(recipeId);
+    setDeletingId(recipeTitle);
 
     try {
-      const success = await onRemove(recipeId);
+      const success = await onRemove(recipeTitle);
       if (!success) {
         alert('お気に入りの削除に失敗しました。もう一度お試しください。');
       }
@@ -115,7 +114,7 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {favorites.map((favorite) => {
         const recipe = favorite.recipe_data;
-        const isDeleting = deletingId === recipe.id;
+        const isDeleting = deletingId === recipe.title;
 
         return (
           <Link
@@ -128,7 +127,7 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
               {/* 削除ボタン */}
               <div className="absolute top-2 right-2 z-10">
                 <Button
-                  onClick={(e) => handleRemove(e, recipe.id, recipe.title)}
+                  onClick={(e) => handleRemove(e, recipe.title)}
                   disabled={isDeleting}
                   variant="ghost"
                   size="sm"

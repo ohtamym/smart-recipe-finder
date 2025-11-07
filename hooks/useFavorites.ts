@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   getFavorites,
   addFavorite as addFavoriteAPI,
-  removeFavoriteByRecipeId,
+  removeFavoriteByRecipeTitle,
 } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 import type { Favorite, Recipe } from '@/types/recipe';
@@ -25,10 +25,10 @@ export interface UseFavoritesReturn {
   error: string | null;
   /** お気に入りを追加する関数 */
   addFavorite: (recipe: Recipe) => Promise<boolean>;
-  /** お気に入りを削除する関数（レシピIDで削除） */
-  removeFavorite: (recipeId: string) => Promise<boolean>;
+  /** お気に入りを削除する関数（レシピタイトルで削除） */
+  removeFavorite: (recipeTitle: string) => Promise<boolean>;
   /** 特定のレシピがお気に入りかどうか確認 */
-  isFavorite: (recipeId: string) => boolean;
+  isFavorite: (recipeTitle: string) => boolean;
   /** お気に入り一覧を再取得 */
   refresh: () => Promise<void>;
 }
@@ -54,14 +54,14 @@ export interface UseFavoritesReturn {
  *
  * // お気に入り削除
  * const handleRemoveFavorite = async () => {
- *   const success = await removeFavorite(recipe.id);
+ *   const success = await removeFavorite(recipe.title);
  *   if (success) {
  *     console.log('お気に入りから削除しました');
  *   }
  * };
  *
  * // お気に入り確認
- * const isRecipeFavorite = isFavorite(recipe.id);
+ * const isRecipeFavorite = isFavorite(recipe.title);
  */
 export function useFavorites(): UseFavoritesReturn {
   const { user, isAuthenticated } = useAuth();
@@ -152,11 +152,11 @@ export function useFavorites(): UseFavoritesReturn {
   /**
    * お気に入りを削除
    *
-   * @param recipeId - 削除するレシピのID
+   * @param recipeTitle - 削除するレシピのタイトル
    * @returns 成功した場合true、失敗した場合false
    */
   const removeFavorite = useCallback(
-    async (recipeId: string): Promise<boolean> => {
+    async (recipeTitle: string): Promise<boolean> => {
       if (!isAuthenticated) {
         setError('ログインが必要です。');
         return false;
@@ -166,7 +166,7 @@ export function useFavorites(): UseFavoritesReturn {
       setError(null);
 
       try {
-        const { error: removeError } = await removeFavoriteByRecipeId(recipeId);
+        const { error: removeError } = await removeFavoriteByRecipeTitle(recipeTitle);
 
         if (removeError) {
           setError(removeError);
@@ -175,7 +175,7 @@ export function useFavorites(): UseFavoritesReturn {
 
         // お気に入りリストから削除
         setFavorites((prev) =>
-          prev.filter((fav) => fav.recipe_id !== recipeId)
+          prev.filter((fav) => fav.recipe_title !== recipeTitle)
         );
         return true;
       } catch (err) {
@@ -192,12 +192,12 @@ export function useFavorites(): UseFavoritesReturn {
   /**
    * 特定のレシピがお気に入りかどうか確認
    *
-   * @param recipeId - 確認するレシピのID
+   * @param recipeTitle - 確認するレシピのタイトル
    * @returns お気に入りの場合true、そうでない場合false
    */
   const isFavorite = useCallback(
-    (recipeId: string): boolean => {
-      return favorites.some((fav) => fav.recipe_id === recipeId);
+    (recipeTitle: string): boolean => {
+      return favorites.some((fav) => fav.recipe_title === recipeTitle);
     },
     [favorites]
   );

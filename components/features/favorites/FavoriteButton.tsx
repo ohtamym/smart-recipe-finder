@@ -61,7 +61,7 @@ export function FavoriteButton({
   const [isProcessing, setIsProcessing] = useState(false);
 
   // お気に入り状態を判定
-  const favorited = isFavorite(recipe.id);
+  const favorited = isFavorite(recipe.title);
 
   /**
    * お気に入りボタンクリックハンドラー
@@ -83,7 +83,7 @@ export function FavoriteButton({
     try {
       if (favorited) {
         // お気に入りから削除
-        const success = await removeFavorite(recipe.id);
+        const success = await removeFavorite(recipe.title);
         if (!success) {
           console.error('お気に入り削除に失敗しました');
         }

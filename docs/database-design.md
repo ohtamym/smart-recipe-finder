@@ -45,7 +45,7 @@
 |---------|---------|------|------|
 | id | UUID | PRIMARY KEY, DEFAULT uuid_generate_v4() | お気に入りID |
 | user_id | UUID | NOT NULL, FOREIGN KEY (users.id) | ユーザーID |
-| recipe_id | VARCHAR(255) | NOT NULL | レシピ識別子（生成またはAPI由来） |
+| recipe_title | VARCHAR(255) | NOT NULL | レシピタイトル |
 | recipe_data | JSONB | NOT NULL | レシピ詳細データ（JSON形式） |
 | source | VARCHAR(50) | NOT NULL | レシピソース（'ai' or 'api'） |
 | created_at | TIMESTAMP | NOT NULL, DEFAULT NOW() | 登録日時 |
@@ -53,7 +53,12 @@
 **インデックス**:
 - `idx_favorites_user_id` ON `user_id`
 - `idx_favorites_created_at` ON `created_at DESC`
-- `unique_user_recipe` UNIQUE ON (`user_id`, `recipe_id`)
+- `unique_user_recipe` UNIQUE ON (`user_id`, `recipe_title`)
+
+**設計上の注意**:
+- お気に入りの判定にはレシピタイトルを使用します（v1.1から変更）
+- 理由: AI生成レシピのIDは任意に付与されるため重複する可能性があるため
+- 同一ユーザーが同じタイトルのレシピを複数回お気に入り登録できないよう制約を設定
 
 **外部キー制約**:
 ```sql
@@ -180,13 +185,13 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE favorites (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  recipe_id VARCHAR(255) NOT NULL,
+  recipe_title VARCHAR(255) NOT NULL,
   recipe_data JSONB NOT NULL,
   source VARCHAR(50) NOT NULL CHECK (source IN ('ai', 'api')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-  
-  -- 同じユーザーが同じレシピを複数回お気に入りできないように
-  CONSTRAINT unique_user_recipe UNIQUE (user_id, recipe_id)
+
+  -- 同じユーザーが同じタイトルのレシピを複数回お気に入りできないように
+  CONSTRAINT unique_user_recipe UNIQUE (user_id, recipe_title)
 );
 
 -- インデックス作成
@@ -250,10 +255,10 @@ WITH CHECK (auth.uid() = user_id);
 ### 6.1 お気に入り追加
 
 ```sql
-INSERT INTO favorites (user_id, recipe_id, recipe_data, source)
+INSERT INTO favorites (user_id, recipe_title, recipe_data, source)
 VALUES (
   'user-uuid-here',
-  'recipe-123',
+  'トマトパスタ',
   '{
     "title": "トマトパスタ",
     "servings": 2,
@@ -277,9 +282,9 @@ VALUES (
 ### 6.2 お気に入り一覧取得
 
 ```sql
-SELECT 
+SELECT
   id,
-  recipe_id,
+  recipe_title,
   recipe_data->>'title' as title,
   recipe_data->>'difficulty' as difficulty,
   source,
@@ -292,12 +297,12 @@ ORDER BY created_at DESC;
 ### 6.3 特定レシピの詳細取得
 
 ```sql
-SELECT 
+SELECT
   id,
   recipe_data
 FROM favorites
-WHERE user_id = 'user-uuid-here' 
-  AND recipe_id = 'recipe-123';
+WHERE user_id = 'user-uuid-here'
+  AND recipe_title = 'トマトパスタ';
 ```
 
 ### 6.4 お気に入り削除
@@ -361,7 +366,7 @@ CREATE INDEX idx_favorites_recipe_data ON favorites USING GIN (recipe_data);
 CREATE TABLE recipe_ratings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  recipe_id VARCHAR(255) NOT NULL,
+  recipe_title VARCHAR(255) NOT NULL,
   rating INTEGER CHECK (rating >= 1 AND rating <= 5),
   comment TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
@@ -400,6 +405,16 @@ CREATE TABLE shopping_lists (
 
 ---
 
-**作成日**: 2025年11月1日  
-**最終更新**: 2025年11月1日  
-**バージョン**: 1.0
+**作成日**: 2025年11月1日
+**最終更新**: 2025年11月7日
+**バージョン**: 1.1
+
+## 変更履歴
+
+### v1.1 (2025年11月7日)
+- お気に入りの識別子を`recipe_id`から`recipe_title`に変更
+- 理由: AI生成レシピのIDは任意に付与されるため重複する可能性があるため
+- 関連するSQL例とテーブル定義を更新
+
+### v1.0 (2025年11月1日)
+- 初版作成

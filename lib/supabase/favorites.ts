@@ -58,23 +58,23 @@ export async function getFavorites(): Promise<FavoritesResult<Favorite[]>> {
 /**
  * 特定のレシピがお気に入りに登録されているか確認
  *
- * @param recipeId - レシピID
+ * @param recipeTitle - レシピタイトル
  * @returns お気に入り登録されている場合はFavoriteオブジェクト、されていない場合はnull
  *
  * @example
- * const { data, error } = await getFavoriteByRecipeId('recipe-123');
+ * const { data, error } = await getFavoriteByRecipeTitle('カレーライス');
  * if (!error && data) {
  *   console.log('このレシピはお気に入りです');
  * }
  */
-export async function getFavoriteByRecipeId(
-  recipeId: string
+export async function getFavoriteByRecipeTitle(
+  recipeTitle: string
 ): Promise<FavoritesResult<Favorite | null>> {
   try {
     const { data, error } = await supabase
       .from('favorites')
       .select('*')
-      .eq('recipe_id', recipeId)
+      .eq('recipe_title', recipeTitle)
       .single();
 
     if (error) {
@@ -139,7 +139,7 @@ export async function addFavorite(
       .from('favorites')
       .insert({
         user_id: user.id,
-        recipe_id: recipe.id,
+        recipe_title: recipe.title,
         recipe_data: recipe,
         source: recipe.source,
       })
@@ -168,19 +168,19 @@ export async function addFavorite(
 }
 
 /**
- * お気に入りから削除（レシピIDで削除）
+ * お気に入りから削除（レシピタイトルで削除）
  *
- * @param recipeId - 削除するレシピのID
+ * @param recipeTitle - 削除するレシピのタイトル
  * @returns 削除が成功したかどうか
  *
  * @example
- * const { data, error } = await removeFavoriteByRecipeId('recipe-123');
+ * const { data, error } = await removeFavoriteByRecipeTitle('カレーライス');
  * if (!error) {
  *   console.log('お気に入りから削除しました');
  * }
  */
-export async function removeFavoriteByRecipeId(
-  recipeId: string
+export async function removeFavoriteByRecipeTitle(
+  recipeTitle: string
 ): Promise<FavoritesResult<boolean>> {
   try {
     // 現在のユーザーを取得
@@ -198,7 +198,7 @@ export async function removeFavoriteByRecipeId(
     const { error } = await supabase
       .from('favorites')
       .delete()
-      .eq('recipe_id', recipeId)
+      .eq('recipe_title', recipeTitle)
       .eq('user_id', user.id);
 
     if (error) {

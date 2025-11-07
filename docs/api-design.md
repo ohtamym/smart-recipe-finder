@@ -547,7 +547,7 @@ const { data, error } = await supabase
   .from('favorites')
   .insert({
     user_id: userId,
-    recipe_id: recipeId,
+    recipe_title: recipeTitle,
     recipe_data: recipeData,
     source: 'ai',
   });
@@ -566,11 +566,13 @@ const { error } = await supabase
 const { data, error } = await supabase
   .from('favorites')
   .select('id')
-  .eq('recipe_id', recipeId)
+  .eq('recipe_title', recipeTitle)
   .single();
 
 const isFavorite = !!data;
 ```
+
+**注意**: v1.1からお気に入りの識別子を`recipe_id`から`recipe_title`に変更しました。理由は、AI生成レシピのIDは任意に付与されるため重複する可能性があるためです。
 
 ---
 

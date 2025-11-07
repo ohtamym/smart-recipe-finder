@@ -15,9 +15,9 @@ export {
 export type { AuthResult } from './auth';
 export {
   getFavorites,
-  getFavoriteByRecipeId,
+  getFavoriteByRecipeTitle,
   addFavorite,
-  removeFavoriteByRecipeId,
+  removeFavoriteByRecipeTitle,
   removeFavoriteById,
 } from './favorites';
 export type { FavoritesResult } from './favorites';
