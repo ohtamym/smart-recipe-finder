@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/components/features/auth';
 import { Loading } from '@/components/ui';
@@ -18,7 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
  * URL: /auth?mode=signup&redirect=/favorites
  */
 
-export default function AuthPage() {
+function AuthPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading, signIn, signUp } = useAuth();
@@ -76,5 +76,22 @@ export default function AuthPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="container mx-auto px-4 py-8 max-w-6xl">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <Loading size="lg" className="mb-4" />
+            <p className="text-gray-600">読み込み中...</p>
+          </div>
+        </main>
+      }
+    >
+      <AuthPageContent />
+    </Suspense>
   );
 }

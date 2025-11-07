@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Search, RefreshCw, Database } from 'lucide-react';
 import { Button, Loading, ErrorMessage } from '@/components/ui';
@@ -16,7 +16,7 @@ import { useRecipeSearch } from '@/hooks/useRecipeSearch';
  * URL: /recipes?ingredients=玉ねぎ,にんじん,じゃがいも
  */
 
-export default function RecipesPage() {
+function RecipesPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -189,5 +189,22 @@ export default function RecipesPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function RecipesPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="container mx-auto px-4 py-8 max-w-6xl">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <Loading size="lg" className="mb-4" />
+            <p className="text-gray-600">読み込み中...</p>
+          </div>
+        </main>
+      }
+    >
+      <RecipesPageContent />
+    </Suspense>
   );
 }
