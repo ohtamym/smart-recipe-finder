@@ -26,7 +26,8 @@
       "Bash(npm run build)",
       "Bash(npm test:*)",
       "Bash(npm run test:coverage:*)",
-      "Bash(timeout 60 npx tsc:*)"
+      "Bash(timeout 60 npx tsc:*)",
+      "mcp__github__issue_read"
     ],
     "deny": [],
     "ask": []
