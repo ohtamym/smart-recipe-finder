@@ -25,7 +25,9 @@ src/
 │   │   └── [id]/
 │   │       └── page.tsx        # レシピ詳細 (CSR)
 │   ├── favorites/
-│   │   └── page.tsx            # お気に入り一覧 (CSR)
+│   │   ├── page.tsx            # お気に入り一覧 (CSR)
+│   │   └── [id]/
+│   │       └── page.tsx        # お気に入り詳細 (CSR)
 │   └── auth/
 │       └── page.tsx            # 認証ページ (CSR)
 ├── components/
@@ -90,7 +92,8 @@ src/
 | トップページ | `/` | SSR | SEO対策、初期表示の高速化 |
 | レシピ一覧 | `/recipes` | CSR | 動的データ、検索結果 |
 | レシピ詳細 | `/recipes/[id]` | CSR | 動的データ、ユーザーインタラクション |
-| お気に入り | `/favorites` | CSR | 認証必須、個人データ |
+| お気に入り一覧 | `/favorites` | CSR | 認証必須、個人データ |
+| お気に入り詳細 | `/favorites/[id]` | CSR | 認証必須、個人データ、Supabaseから取得 |
 | 認証ページ | `/auth` | CSR | セキュリティ、動的フォーム |
 
 ### 3.1 レンダリング方式の判断基準
@@ -231,14 +234,14 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
 
 ---
 
-### 4.4 お気に入りページ (`/favorites` - CSR)
+### 4.4 お気に入り一覧ページ (`/favorites` - CSR)
 
 **ファイル**: `app/favorites/page.tsx`
 
 #### 責務
 - お気に入りレシピ一覧表示
 - お気に入り削除機能
-- レシピ詳細へのナビゲーション
+- お気に入り詳細へのナビゲーション（`/favorites/[お気に入りID]`）
 
 #### レンダリング方式
 ```typescript
@@ -260,8 +263,8 @@ export default function FavoritesPage() {
       {favorites.length === 0 ? (
         <EmptyState />
       ) : (
-        <FavoritesList 
-          favorites={favorites} 
+        <FavoritesList
+          favorites={favorites}
           onRemove={removeFavorite}
         />
       )}
@@ -271,7 +274,7 @@ export default function FavoritesPage() {
 ```
 
 #### 使用コンポーネント
-- `FavoritesList`: お気に入りリスト
+- `FavoritesList`: お気に入りリスト（お気に入りIDでリンク）
 - `RecipeCard`: レシピカード（削除ボタン付き）
 - `EmptyState`: 空状態表示
 
@@ -281,7 +284,73 @@ export default function FavoritesPage() {
 
 ---
 
-### 4.5 認証ページ (`/auth` - CSR)
+### 4.5 お気に入り詳細ページ (`/favorites/[id]` - CSR)
+
+**ファイル**: `app/favorites/[id]/page.tsx`
+
+#### 責務
+- お気に入りIDからSupabaseで直接レシピデータを取得
+- レシピの詳細情報表示（材料、手順、お気に入り登録日）
+- sessionStorageに依存しない安定したデータ取得
+
+#### レンダリング方式
+```typescript
+'use client';
+
+export default function FavoriteDetailPage({ params }: { params: { id: string } }) {
+  const { user, isAuthenticated } = useAuth();
+  const [favorite, setFavorite] = useState<Favorite | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      redirect('/auth?redirect=/favorites');
+      return;
+    }
+
+    const fetchFavorite = async () => {
+      const { data, error } = await getFavoriteById(params.id);
+      if (!error && data) {
+        setFavorite(data);
+      }
+      setLoading(false);
+    };
+
+    fetchFavorite();
+  }, [params.id, isAuthenticated]);
+
+  if (loading) return <Loading />;
+  if (!favorite) return <NotFound />;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <RecipeDetail recipe={favorite.recipe_data} />
+      <div className="text-sm text-gray-500 mt-4">
+        お気に入り登録日: {new Date(favorite.created_at).toLocaleDateString('ja-JP')}
+      </div>
+    </div>
+  );
+}
+```
+
+#### 使用コンポーネント
+- `RecipeDetail`: レシピヘッダー（タイトル、画像、難易度）
+- `IngredientList`: 材料リスト
+- `InstructionList`: 調理手順
+- `FavoriteButton`: お気に入りボタン
+
+#### State管理
+- `useAuth`: 認証状態
+- `favorite`: お気に入りデータ（Supabaseから直接取得）
+
+#### 注意点
+- お気に入りIDは一意なUUID（`favorites.id`）を使用
+- sessionStorageに依存せず、Supabaseから直接データを取得
+- AI生成レシピのIDの重複問題を回避
+
+---
+
+### 4.6 認証ページ (`/auth` - CSR)
 
 **ファイル**: `app/auth/page.tsx`
 
@@ -731,7 +800,7 @@ export function useFavorites() {
 
     const { error } = await supabase.from('favorites').insert({
       user_id: user.id,
-      recipe_id: recipe.id,
+      recipe_title: recipe.title,  // タイトルを使用
       recipe_data: recipe,
       source: recipe.source,
     });
@@ -741,13 +810,13 @@ export function useFavorites() {
     }
   };
 
-  const removeFavorite = async (recipeId: string) => {
+  const removeFavorite = async (recipeTitle: string) => {
     if (!user) return;
 
     const { error } = await supabase
       .from('favorites')
       .delete()
-      .eq('recipe_id', recipeId)
+      .eq('recipe_title', recipeTitle)  // タイトルで削除
       .eq('user_id', user.id);
 
     if (!error) {
@@ -755,8 +824,8 @@ export function useFavorites() {
     }
   };
 
-  const isFavorite = (recipeId: string) => {
-    return favorites.some(f => f.recipe_id === recipeId);
+  const isFavorite = (recipeTitle: string) => {
+    return favorites.some(f => f.recipe_title === recipeTitle);  // タイトルで判定
   };
 
   return { favorites, loading, addFavorite, removeFavorite, isFavorite };
@@ -978,10 +1047,10 @@ export interface Instruction {
 }
 
 export interface Favorite {
-  id: string;
+  id: string;                    // お気に入りID（UUID、ルーティングに使用）
   user_id: string;
-  recipe_id: string;
-  recipe_data: Recipe;
+  recipe_title: string;          // レシピタイトル（お気に入り判定に使用）
+  recipe_data: Recipe;           // レシピデータ全体（JSONB）
   source: 'ai' | 'api';
   created_at: string;
 }
@@ -1115,5 +1184,14 @@ function AuthenticatedApp() {
 ---
 
 **作成日**: 2025年11月1日
-**最終更新**: 2025年11月6日
-**バージョン**: 1.2
+**最終更新**: 2025年11月18日
+**バージョン**: 1.3
+
+## 変更履歴
+
+### v1.3 (2025年11月18日)
+- お気に入り詳細ページ（`/favorites/[id]`）を追加
+- お気に入りIDを使用したルーティングに変更
+- お気に入りの判定と削除にレシピタイトルを使用するように更新
+- Favorite型定義を更新（`recipe_id` → `recipe_title`、`id`コメント追加）
+- sessionStorageに依存しないデータ取得方法を追加

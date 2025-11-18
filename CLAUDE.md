@@ -72,7 +72,9 @@ app/                          # Next.js App Routerページ
 ├── recipes/
 │   ├── page.tsx            # レシピ一覧（検索結果）（CSR）
 │   └── [id]/page.tsx       # レシピ詳細（CSR）
-├── favorites/page.tsx      # お気に入り一覧（CSR、認証必須）
+├── favorites/
+│   ├── page.tsx            # お気に入り一覧（CSR、認証必須）
+│   └── [id]/page.tsx       # お気に入り詳細（CSR、認証必須）
 └── auth/page.tsx           # ログイン/サインアップ（CSR）
 
 components/
@@ -131,6 +133,9 @@ hooks/                      # カスタムReactフック
    - 認証済みユーザーがレシピをお気に入り登録可能
    - レシピデータ全体をSupabaseにJSONBとして保存
    - お気に入りの判定にはレシピタイトルを使用（AI生成IDは重複の可能性があるため）
+   - お気に入り詳細ページは `/favorites/[お気に入りID]` で一意なUUID（`favorites.id`）を使用
+   - お気に入りIDを使用することで、AI生成レシピIDの重複問題を回避
+   - Supabaseから直接データを取得するため、sessionStorageへの依存なし
    - Row Level Security (RLS) により、ユーザーは自分のお気に入りのみアクセス可能
 
 ## データベーススキーマ（Supabase）
@@ -153,7 +158,10 @@ CREATE INDEX idx_favorites_user_id ON favorites(user_id);
 CREATE INDEX idx_favorites_created_at ON favorites(created_at DESC);
 ```
 
-**注意**: お気に入りの判定にはレシピタイトルを使用します（v1.1から変更）。理由は、AI生成レシピのIDは任意に付与されるため重複する可能性があるためです。
+**注意**:
+- お気に入りの判定にはレシピタイトルを使用します（v1.1から変更）
+- お気に入り詳細ページでは一意なお気に入りID（`favorites.id`のUUID）を使用します（v1.2から追加）
+- AI生成レシピのIDは重複する可能性があるため、お気に入りはレシピIDではなくお気に入りIDで識別します
 
 ### RLSポリシー
 
@@ -227,6 +235,14 @@ const [aiRecipes, apiRecipes] = await Promise.allSettled([
 - クライアントサイドの認証状態は `useAuth` フックで管理
 - `onAuthStateChange` リスナーでセッション管理
 - `/favorites` から未認証ユーザーをリダイレクト
+
+### お気に入り機能の実装
+
+- お気に入りの追加・削除にはレシピタイトルを識別子として使用
+- お気に入り詳細ページのルーティングには一意なお気に入りID（UUID）を使用
+- お気に入りページからレシピ詳細へは `/favorites/[お気に入りID]` でアクセス
+- 通常の検索結果からレシピ詳細へは `/recipes/[レシピID]` でアクセス（sessionStorage経由）
+- お気に入りデータはSupabaseから直接取得するため、sessionStorageに依存しない
 
 ### モバイルファーストデザイン
 
