@@ -56,6 +56,57 @@ export async function getFavorites(): Promise<FavoritesResult<Favorite[]>> {
 }
 
 /**
+ * お気に入りIDから1件取得
+ *
+ * @param favoriteId - お気に入りID（UUID）
+ * @returns お気に入りオブジェクト、見つからない場合はnull
+ *
+ * @example
+ * const { data, error } = await getFavoriteById('favorite-uuid');
+ * if (!error && data) {
+ *   console.log('お気に入りレシピ:', data.recipe_data);
+ * }
+ */
+export async function getFavoriteById(
+  favoriteId: string
+): Promise<FavoritesResult<Favorite | null>> {
+  try {
+    const { data, error } = await supabase
+      .from('favorites')
+      .select('*')
+      .eq('id', favoriteId)
+      .single();
+
+    if (error) {
+      // 該当データなしのエラーは正常な結果として扱う
+      if (error.code === 'PGRST116') {
+        return {
+          data: null,
+          error: null,
+        };
+      }
+
+      console.error('お気に入り取得エラー:', error);
+      return {
+        data: null,
+        error: getErrorMessage(error),
+      };
+    }
+
+    return {
+      data: data as Favorite,
+      error: null,
+    };
+  } catch (err) {
+    console.error('予期しないエラー:', err);
+    return {
+      data: null,
+      error: '予期しないエラーが発生しました。',
+    };
+  }
+}
+
+/**
  * 特定のレシピがお気に入りに登録されているか確認
  *
  * @param recipeTitle - レシピタイトル

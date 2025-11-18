@@ -62,21 +62,6 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   /**
-   * レシピカードクリックハンドラー
-   * sessionStorageにレシピデータを保存して、レシピ詳細ページで使用できるようにする
-   */
-  const handleRecipeClick = () => {
-    try {
-      // お気に入りからレシピデータを抽出
-      const recipes = favorites.map((fav) => fav.recipe_data);
-      // sessionStorageに保存（レシピ詳細ページで使用）
-      sessionStorage.setItem('recipes', JSON.stringify(recipes));
-    } catch (error) {
-      console.error('sessionStorageへの保存エラー:', error);
-    }
-  };
-
-  /**
    * 削除ボタンクリックハンドラー
    */
   const handleRemove = async (
@@ -119,8 +104,7 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
         return (
           <Link
             key={favorite.id}
-            href={`/recipes/${recipe.id}`}
-            onClick={handleRecipeClick}
+            href={`/favorites/${favorite.id}`}
             className="group block"
           >
             <Card className="h-full transition-all duration-200 hover:shadow-lg hover:-translate-y-1 cursor-pointer relative">

@@ -15,6 +15,7 @@ export {
 export type { AuthResult } from './auth';
 export {
   getFavorites,
+  getFavoriteById,
   getFavoriteByRecipeTitle,
   addFavorite,
   removeFavoriteByRecipeTitle,
